@@ -7,12 +7,17 @@ import numpy as np
 from typing import List
 import openai
 import json
+import requests
 
 app = Flask(__name__)
 CORS(app)
 
-# Configure OpenAI
+# Configure OpenAI (only for embeddings)
 openai.api_key = os.getenv('OPENAI_API_KEY')
+
+# Configure Goodfire API
+GOODFIRE_API_KEY = os.getenv('GOODFIRE_API_KEY')
+GOODFIRE_API_URL = "https://api.goodfire.dev/v1"
 
 # Initialize FAISS index
 dimension = 1536  # OpenAI embedding dimension
@@ -49,17 +54,27 @@ def chunk_text(text: str, chunk_size: int = 1000) -> List[str]:
     return chunks
 
 def generate_course_notes(content: str, preferences: dict) -> str:
-    """Generate course notes based on user preferences."""
-    prompt = f"Generate course notes for the following content according to these preferences: {preferences}\n\nContent: {content}"
+    """Generate course notes using Goodfire API."""
+    headers = {
+        "Authorization": f"Bearer {GOODFIRE_API_KEY}",
+        "Content-Type": "application/json"
+    }
     
-    response = openai.ChatCompletion.create(
-        model="gpt-4o",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant that generates course notes."},
-            {"role": "user", "content": prompt}
-        ]
+    payload = {
+        "prompt": f"Generate course notes for the following content according to these preferences: {preferences}\n\nContent: {content}",
+        "max_tokens": 1000
+    }
+    
+    response = requests.post(
+        f"{GOODFIRE_API_URL}/chat/completions",
+        headers=headers,
+        json=payload
     )
-    return response.choices[0].message.content
+    
+    if response.status_code == 200:
+        return response.json()['choices'][0]['message']['content']
+    else:
+        raise Exception(f"Goodfire API error: {response.text}")
 
 @app.route('/api/documents', methods=['POST'])
 def upload_document():
@@ -109,7 +124,7 @@ def upload_document():
 
 @app.route('/api/qa', methods=['POST'])
 def answer_question():
-    """Handle Q&A queries."""
+    """Handle Q&A queries using Goodfire API."""
     data = request.json
     if not data or 'question' not in data:
         return jsonify({'error': 'No question provided'}), 400
@@ -126,17 +141,28 @@ def answer_question():
         relevant_chunks = [stored_chunks[i] for i in I[0] if i < len(stored_chunks)]
         context = "\n".join(relevant_chunks)
         
-        # Generate response using GPT-4
-        response = openai.ChatCompletion.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant answering questions based on the provided context."},
-                {"role": "user", "content": f"Context: {context}\n\nQuestion: {data['question']}"}
-            ]
+        # Generate response using Goodfire API
+        headers = {
+            "Authorization": f"Bearer {GOODFIRE_API_KEY}",
+            "Content-Type": "application/json"
+        }
+        
+        payload = {
+            "prompt": f"Context: {context}\n\nQuestion: {data['question']}",
+            "max_tokens": 500
+        }
+        
+        response = requests.post(
+            f"{GOODFIRE_API_URL}/chat/completions",
+            headers=headers,
+            json=payload
         )
         
+        if response.status_code != 200:
+            raise Exception(f"Goodfire API error: {response.text}")
+        
         return jsonify({
-            'answer': response.choices[0].message.content,
+            'answer': response.json()['choices'][0]['message']['content'],
             'context': relevant_chunks
         })
         
