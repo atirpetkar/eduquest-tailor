@@ -26,7 +26,7 @@ EduFire is a cutting-edge educational platform that leverages AI technology to t
 
 - Node.js (v16 or higher) - [Download here](https://nodejs.org/)
 - npm (comes with Node.js) or yarn
-- Python 3.8+ (for backend)
+- Python 3.11+ (for backend)
 
 ### Frontend Setup
 
@@ -57,26 +57,33 @@ http://localhost:5173
 
 ### Backend Setup
 
-1. Install Python dependencies:
+1. Navigate to the backend directory:
+```bash
+cd backend
+```
+
+2. Install Python dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-2. Set up environment variables:
+3. Set up environment variables:
 ```env
 OPENAI_API_KEY=your_openai_api_key
 GOODFIRE_API_KEY=your_goodfire_api_key
 ```
 
-3. Start the backend server:
+4. Start the backend server:
 ```bash
 python app.py
 ```
 
+The backend server will start on port 8084.
+
 ### Common Issues
 
 - If you see a blank page, make sure both frontend and backend servers are running
-- For port conflicts, check if port 5173 is available
+- For port conflicts, check if ports 5173 (frontend) and 8084 (backend) are available
 - For module not found errors, try deleting node_modules and package-lock.json, then run npm install again
 
 ## 📝 License
