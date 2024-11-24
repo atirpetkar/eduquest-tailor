@@ -43,12 +43,6 @@ export const DocumentUpload = ({ onUpload, preferences }: DocumentUploadProps) =
       return;
     }
 
-    if (!preferences) {
-      console.warn("Upload attempted without user preferences");
-      toast.error("Please complete onboarding first");
-      return;
-    }
-
     try {
       console.log("Starting file upload process with preferences:", preferences);
       setIsProcessing(true);
@@ -65,7 +59,9 @@ export const DocumentUpload = ({ onUpload, preferences }: DocumentUploadProps) =
 
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('preferences', JSON.stringify(preferences));
+      if (preferences) {
+        formData.append('preferences', JSON.stringify(preferences));
+      }
       
       console.log("Making API request to:", `${API_BASE_URL}/documents`);
       const response = await fetch(`${API_BASE_URL}/documents`, {
@@ -146,7 +142,7 @@ export const DocumentUpload = ({ onUpload, preferences }: DocumentUploadProps) =
           <Button 
             onClick={handleUpload}
             className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity"
-            disabled={!file || isProcessing || !preferences}
+            disabled={!file || isProcessing}
           >
             {isProcessing ? "Processing..." : "Upload Document"}
           </Button>
