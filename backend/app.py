@@ -90,20 +90,24 @@ def upload_document():
         latest_document = content
         logger.info(f"File content length: {len(content)} characters")
 
+        # Chunk the document
+        logger.debug("Chunking document")
+        chunks = chunk_text(content)
+        
         # Generate course notes based on preferences
         logger.debug("Generating course notes with user preferences")
         latest_notes = goodfire_service.generate_course_notes(content, json.loads(preferences))
 
-        # Chunk the document and add to embedding service
-        logger.debug("Chunking document")
-        chunks = chunk_text(content)
+        # Add chunks to embedding service
+        logger.debug("Adding chunks to embedding service")
         embedding_service.add_chunks(chunks)
 
         logger.info("Document processed successfully")
         return jsonify({
             'message': 'Document processed successfully',
             'chunks_processed': len(chunks),
-            'notes': latest_notes
+            'notes': latest_notes,
+            'status': 'completed'
         })
 
     except Exception as e:

@@ -22,6 +22,16 @@ export const DocumentUpload = ({ onUpload, preferences }: DocumentUploadProps) =
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
 
+  const getStatusMessage = (progress: number) => {
+    if (progress === 0) return "";
+    if (progress < 25) return "Processing your document...";
+    if (progress < 50) return "Chunking your document into smaller pieces...";
+    if (progress < 75) return "Creating embeddings for each chunk...";
+    if (progress < 90) return "Storing chunks in vector database...";
+    if (progress < 100) return "Generating course notes based on your preferences...";
+    return "Document processed successfully! 🎉";
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     console.log("File selected:", selectedFile?.name);
@@ -47,13 +57,15 @@ export const DocumentUpload = ({ onUpload, preferences }: DocumentUploadProps) =
       console.log("Starting file upload process with preferences:", preferences);
       setIsProcessing(true);
       
+      // Start progress simulation with actual processing steps
       const progressInterval = setInterval(() => {
         setProgress(prev => {
-          if (prev >= 90) {
+          const newProgress = Math.min(prev + 5, 90);
+          setStatus(getStatusMessage(newProgress));
+          if (newProgress >= 90) {
             clearInterval(progressInterval);
-            return prev;
           }
-          return prev + 10;
+          return newProgress;
         });
       }, 500);
 
@@ -75,12 +87,16 @@ export const DocumentUpload = ({ onUpload, preferences }: DocumentUploadProps) =
 
       const result = await response.json();
       console.log("Upload successful, response:", result);
+      
+      // Complete the progress
       setProgress(100);
+      setStatus(getStatusMessage(100));
       onUpload(result.notes);
       toast.success("Document processed successfully!");
     } catch (error) {
       console.error("Error processing file:", error);
       toast.error("Error processing file");
+      setStatus("Error processing document");
     } finally {
       setIsProcessing(false);
     }
@@ -148,7 +164,7 @@ export const DocumentUpload = ({ onUpload, preferences }: DocumentUploadProps) =
                 </div>
               </div>
               <p className="text-sm text-muted-foreground animate-fade-in text-center">
-                {progress === 100 ? 'Document processed! 🎉' : 'Processing your document...'}
+                {status}
               </p>
             </div>
           )}
