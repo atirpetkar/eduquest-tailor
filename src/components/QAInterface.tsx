@@ -130,6 +130,13 @@ export const QAInterface = ({ documentText, preferences }: { documentText: strin
           </form>
         </div>
       </Card>
+
+      <Button 
+        onClick={() => navigate('/assessment')}
+        className="w-full bg-gradient-to-r from-primary to-secondary text-white hover:opacity-90 transition-opacity"
+      >
+        Start Assessment
+      </Button>
     </div>
   );
 };
