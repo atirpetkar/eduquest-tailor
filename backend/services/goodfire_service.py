@@ -1,4 +1,5 @@
 import logging
+import json
 from typing import List, Dict
 
 logger = logging.getLogger(__name__)
@@ -33,7 +34,7 @@ class GoodfireService:
             logger.error(f"Error generating course notes: {str(e)}")
             raise
 
-    def generate_assessment(self, content: str, preferences: dict) -> Dict:
+    def generate_assessment(self, content: str, preferences: dict) -> str:
         """Generate assessment questions based on content and preferences."""
         try:
             logger.info("Generating assessment with Goodfire API")
@@ -67,8 +68,24 @@ class GoodfireService:
             ):
                 response += token.choices[0].delta.content or ""
 
-            logger.info("Assessment generated successfully")
-            return response
+            # Ensure the response is valid JSON
+            try:
+                # Try to parse the response as JSON to validate it
+                json.loads(response)
+                logger.info("Assessment generated successfully")
+                return response
+            except json.JSONDecodeError:
+                # If the response isn't valid JSON, format it properly
+                logger.warning("Response wasn't valid JSON, attempting to fix format")
+                # Extract the array part from the response using string manipulation
+                start_idx = response.find('[')
+                end_idx = response.rfind(']') + 1
+                if start_idx != -1 and end_idx != -1:
+                    json_str = response[start_idx:end_idx]
+                    # Validate the extracted JSON
+                    json.loads(json_str)  # This will raise an error if still invalid
+                    return json_str
+                raise ValueError("Could not extract valid JSON from response")
 
         except Exception as e:
             logger.error(f"Error generating assessment: {str(e)}")
