@@ -44,22 +44,26 @@ logger.info("Initializing services")
 embedding_service = EmbeddingService()
 goodfire_service = GoodfireService(goodfire_client, goodfire_variant)
 
-# Store the latest document in memory (in a production environment, use a proper database)
+# Store the latest document and notes in memory
 latest_document = None
+latest_notes = None
 
 @app.route('/api/documents/latest', methods=['GET'])
 def get_latest_document():
-    """Get the latest uploaded document."""
-    global latest_document
+    """Get the latest uploaded document and notes."""
+    global latest_document, latest_notes
     if latest_document:
-        return jsonify({'content': latest_document})
+        return jsonify({
+            'content': latest_document,
+            'notes': latest_notes
+        })
     return jsonify({'error': 'No document found'}), 404
 
 @app.route('/api/documents', methods=['POST'])
 def upload_document():
     """Handle document upload, chunking, and embedding."""
     try:
-        global latest_document
+        global latest_document, latest_notes
         logger.info("Received document upload request")
         
         if 'file' not in request.files:
@@ -83,7 +87,7 @@ def upload_document():
 
         # Generate course notes based on preferences
         logger.debug("Generating course notes")
-        notes = goodfire_service.generate_course_notes(content, json.loads(preferences))
+        latest_notes = goodfire_service.generate_course_notes(content, json.loads(preferences))
 
         # Chunk the document and add to embedding service
         logger.debug("Chunking document")
@@ -94,7 +98,7 @@ def upload_document():
         return jsonify({
             'message': 'Document processed successfully',
             'chunks_processed': len(chunks),
-            'notes': notes
+            'notes': latest_notes
         })
 
     except Exception as e:

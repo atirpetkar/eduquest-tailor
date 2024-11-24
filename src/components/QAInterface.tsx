@@ -24,14 +24,24 @@ export const QAInterface = ({ documentText, preferences }: { documentText: strin
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("Generating course notes with preferences:", preferences);
-    const simulatedNotes = `Sample course notes formatted according to preferences:
-${preferences.contentFormat.map((pref: string) => `\n- Following ${pref} style`).join('')}
-\n\nDocument content summary:\n${documentText.slice(0, 200)}...`;
-    
-    setCourseNotes(simulatedNotes);
-    toast.success("Course notes generated successfully!");
-  }, [documentText, preferences]);
+    const fetchLatestDocument = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/documents/latest`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.notes) {
+            console.log("Setting course notes from server");
+            setCourseNotes(data.notes);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching latest document:", error);
+        toast.error("Failed to load course notes");
+      }
+    };
+
+    fetchLatestDocument();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -123,7 +133,7 @@ ${preferences.contentFormat.map((pref: string) => `\n- Following ${pref} style`)
             <h2 className="text-xl font-semibold mb-4">Generated Course Notes</h2>
             <ScrollArea className="h-[400px] w-full rounded-md border p-4">
               <pre className="whitespace-pre-wrap text-left">
-                {courseNotes}
+                {courseNotes || "Loading course notes..."}
               </pre>
             </ScrollArea>
           </Card>
