@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "@/config";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Home } from "lucide-react";
 
 interface AssessmentProps {
   documentText?: string;
@@ -27,6 +27,9 @@ export const AssessmentInterface = ({ documentText, preferences }: AssessmentPro
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [showResults, setShowResults] = useState(false);
+  const [score, setScore] = useState<number | null>(null);
 
   useEffect(() => {
     const generateQuestions = async () => {
@@ -35,6 +38,7 @@ export const AssessmentInterface = ({ documentText, preferences }: AssessmentPro
         const storedPreferences = sessionStorage.getItem('preferences');
 
         if (!storedDocumentText || !storedPreferences) {
+          setError("No document or preferences found");
           toast.error("No document or preferences found");
           navigate('/');
           return;
@@ -69,6 +73,7 @@ export const AssessmentInterface = ({ documentText, preferences }: AssessmentPro
         toast.success("Assessment generated successfully!");
       } catch (error) {
         console.error("Error generating assessment:", error);
+        setError("Failed to generate assessment");
         toast.error("Failed to generate assessment");
         setLoading(false);
       }
@@ -78,15 +83,60 @@ export const AssessmentInterface = ({ documentText, preferences }: AssessmentPro
   }, [navigate]);
 
   const handleSubmit = () => {
-    console.log("Submitted answers:", answers);
+    // Calculate a simple score (for demonstration)
+    const totalQuestions = questions.length;
+    const correctAnswers = Object.values(answers).length; // In a real app, you'd compare with actual correct answers
+    const calculatedScore = (correctAnswers / totalQuestions) * 100;
+    
+    setScore(calculatedScore);
+    setShowResults(true);
     toast.success("Assessment submitted successfully!");
-    navigate('/');
   };
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen text-gray-700">
-        Generating assessment questions...
+      <div className="flex justify-center items-center h-screen">
+        <Card className="p-6 text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-700">Generating assessment questions...</p>
+        </Card>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container max-w-4xl mx-auto py-8">
+        <Card className="p-6 text-center">
+          <p className="text-red-500 mb-4">{error}</p>
+          <Button onClick={() => navigate('/')} className="flex items-center gap-2">
+            <Home className="h-4 w-4" />
+            Return Home
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
+  if (showResults) {
+    return (
+      <div className="container max-w-4xl mx-auto py-8">
+        <Card className="p-6 text-center">
+          <h2 className="text-2xl font-semibold mb-4">Assessment Results</h2>
+          <p className="text-xl mb-6">Your Score: {score?.toFixed(0)}%</p>
+          <div className="space-y-4">
+            <p className="text-gray-600">
+              Thank you for completing the assessment!
+            </p>
+            <Button 
+              onClick={() => navigate('/')}
+              className="flex items-center gap-2 mx-auto"
+            >
+              <Home className="h-4 w-4" />
+              Return Home
+            </Button>
+          </div>
+        </Card>
       </div>
     );
   }
@@ -133,6 +183,7 @@ export const AssessmentInterface = ({ documentText, preferences }: AssessmentPro
           <Button 
             onClick={handleSubmit}
             className="w-full bg-primary text-white hover:bg-primary/90"
+            disabled={Object.keys(answers).length !== questions.length}
           >
             Submit Assessment
           </Button>
