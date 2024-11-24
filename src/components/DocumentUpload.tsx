@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "@/config";
+import { ArrowLeft, Flame } from "lucide-react";
 
 export const DocumentUpload = ({ onUpload }: { onUpload: (text: string) => void }) => {
   console.log("Rendering DocumentUpload component");
@@ -40,6 +41,18 @@ export const DocumentUpload = ({ onUpload }: { onUpload: (text: string) => void 
     try {
       console.log("Starting file upload process");
       setIsProcessing(true);
+      
+      // Simulate progress for better UX
+      const progressInterval = setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return prev;
+          }
+          return prev + 10;
+        });
+      }, 500);
+
       const formData = new FormData();
       formData.append('file', file);
       
@@ -55,6 +68,7 @@ export const DocumentUpload = ({ onUpload }: { onUpload: (text: string) => void 
 
       const result = await response.json();
       console.log("Upload successful, response:", result);
+      setProgress(100);
       onUpload(result.notes);
       toast.success("Document processed successfully!");
     } catch (error) {
@@ -66,50 +80,67 @@ export const DocumentUpload = ({ onUpload }: { onUpload: (text: string) => void 
   };
 
   return (
-    <Card className="p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">Upload Learning Material</h2>
+    <div className="space-y-6">
+      <div className="flex items-center gap-4 mb-8">
         <Button 
-          variant="outline"
+          variant="ghost"
           onClick={() => {
             console.log("Navigating back to home");
             navigate('/');
           }}
-          className="ml-auto"
+          className="group text-primary hover:text-primary/90 hover:bg-primary/10"
         >
+          <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
           Back to Home
         </Button>
+        <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          Upload Learning Material
+        </h1>
       </div>
-      
-      <div className="space-y-4">
-        <Input
-          type="file"
-          accept=".txt"
-          onChange={handleFileChange}
-          className="mb-4"
-          disabled={isProcessing}
-        />
-        
-        {(progress > 0 || status) && (
-          <div className="space-y-2">
-            <Progress 
-              value={progress} 
-              className="h-2 transition-all duration-500 ease-in-out"
-            />
-            <p className="text-sm text-muted-foreground animate-fade-in">
-              {status}
-            </p>
-          </div>
-        )}
 
-        <Button 
-          onClick={handleUpload}
-          className="w-full"
-          disabled={!file || isProcessing}
-        >
-          {isProcessing ? "Processing..." : "Upload Document"}
-        </Button>
-      </div>
-    </Card>
+      <Card className="p-6 bg-white/95 backdrop-blur border-primary/20 shadow-lg">
+        <div className="space-y-6">
+          <Input
+            type="file"
+            accept=".txt"
+            onChange={handleFileChange}
+            className="border-2 border-dashed border-primary/30 rounded-lg p-4 hover:border-primary/50 transition-colors"
+            disabled={isProcessing}
+          />
+          
+          {(progress > 0 || status) && (
+            <div className="space-y-4">
+              <div className="relative">
+                <Progress 
+                  value={progress} 
+                  className="h-3 bg-primary/20"
+                />
+                <div 
+                  className="absolute top-1/2 -translate-y-1/2 left-0 flex items-center"
+                  style={{ left: `${progress}%` }}
+                >
+                  <Flame 
+                    className={`h-6 w-6 text-primary animate-pulse ${
+                      progress === 100 ? 'text-green-500' : ''
+                    }`}
+                  />
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground animate-fade-in text-center">
+                {progress === 100 ? 'Document processed! 🎉' : 'Processing your document...'}
+              </p>
+            </div>
+          )}
+
+          <Button 
+            onClick={handleUpload}
+            className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity"
+            disabled={!file || isProcessing}
+          >
+            {isProcessing ? "Processing..." : "Upload Document"}
+          </Button>
+        </div>
+      </Card>
+    </div>
   );
 };
