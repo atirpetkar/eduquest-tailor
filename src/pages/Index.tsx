@@ -39,28 +39,28 @@ const Index = ({ isStudent = false }: IndexProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#F2FCE2] to-[#E5DEFF] py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#F2FCE2] via-[#E5DEFF] to-[#FDE1D3] animate-gradient-x py-8 px-4">
       <div className="container max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center gap-4">
             <Button 
               variant="ghost"
-              className="group"
+              className="group hover:bg-white/20"
               onClick={() => navigate('/')}
             >
               <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
               Back
             </Button>
             <div className="flex items-center gap-2">
-              <BookOpen className="h-6 w-6 text-[#6E59A5]" />
-              <h1 className="text-2xl font-bold text-[#1A1F2C]">
+              <BookOpen className="h-6 w-6 text-[#8B5CF6]" />
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] bg-clip-text text-transparent">
                 {isStudent ? "Student Portal" : "Admin Portal"}
               </h1>
             </div>
           </div>
         </div>
 
-        <Card className="p-6 bg-white/80 backdrop-blur animate-fade-in">
+        <Card className="p-6 bg-white/80 backdrop-blur animate-fade-in border border-white/20">
           {!isStudent && step === "upload" && (
             <DocumentUpload onUpload={handleDocumentUpload} />
           )}

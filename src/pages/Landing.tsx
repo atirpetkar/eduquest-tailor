@@ -13,11 +13,11 @@ const Landing = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#F2FCE2] to-[#E5DEFF] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#F2FCE2] via-[#E5DEFF] to-[#FDE1D3] animate-gradient-x flex items-center justify-center p-4">
       <div className="container max-w-4xl mx-auto space-y-12">
         <div className="text-center space-y-6 animate-fade-in">
           <GraduationCap className="w-20 h-20 mx-auto text-[#6E59A5] animate-bounce" />
-          <h1 className="text-6xl font-bold text-[#1A1F2C] mb-4">
+          <h1 className="text-6xl font-bold bg-gradient-to-r from-[#8B5CF6] via-[#D946EF] to-[#F97316] bg-clip-text text-transparent animate-text mb-4">
             EduQuest Platform
           </h1>
           <p className="text-gray-600 text-xl max-w-2xl mx-auto">
@@ -26,14 +26,14 @@ const Landing = () => {
         </div>
         
         <div className="grid md:grid-cols-2 gap-8">
-          <Card className="p-8 hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur group hover:-translate-y-1">
-            <School className="w-12 h-12 text-[#6E59A5] mb-6 group-hover:scale-110 transition-transform" />
+          <Card className="p-8 hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-white/90 to-white/50 backdrop-blur group hover:-translate-y-1 border border-white/20">
+            <School className="w-12 h-12 text-[#8B5CF6] mb-6 group-hover:scale-110 transition-transform" />
             <h2 className="text-2xl font-semibold mb-4 text-[#6E59A5]">Admin Portal</h2>
             <p className="text-gray-600 mb-8 h-20">
               Upload and manage course content for students. Create personalized learning experiences with AI-powered tools.
             </p>
             <Button 
-              className="w-full group bg-[#9b87f5] hover:bg-[#7E69AB] transition-colors"
+              className="w-full group bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] hover:opacity-90 transition-opacity"
               onClick={() => handleNavigation('/admin')}
             >
               Enter Admin Portal
@@ -41,14 +41,14 @@ const Landing = () => {
             </Button>
           </Card>
 
-          <Card className="p-8 hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur group hover:-translate-y-1">
-            <BookOpen className="w-12 h-12 text-[#6E59A5] mb-6 group-hover:scale-110 transition-transform" />
+          <Card className="p-8 hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-white/90 to-white/50 backdrop-blur group hover:-translate-y-1 border border-white/20">
+            <BookOpen className="w-12 h-12 text-[#D946EF] mb-6 group-hover:scale-110 transition-transform" />
             <h2 className="text-2xl font-semibold mb-4 text-[#6E59A5]">Student Portal</h2>
             <p className="text-gray-600 mb-8 h-20">
               Start your personalized learning journey with adaptive content and AI-guided assessments.
             </p>
             <Button 
-              className="w-full group bg-[#9b87f5] hover:bg-[#7E69AB] transition-colors"
+              className="w-full group bg-gradient-to-r from-[#D946EF] to-[#F97316] hover:opacity-90 transition-opacity"
               onClick={() => handleNavigation('/student')}
             >
               Start Learning
