@@ -127,6 +127,31 @@ def generate_notes():
         logger.error(f"Error generating notes: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/generate-assessment', methods=['POST'])
+def generate_assessment():
+    """Generate assessment based on preferences."""
+    try:
+        global latest_document
+        
+        if not latest_document:
+            return jsonify({'error': 'No document available'}), 400
+            
+        data = request.json
+        if not data or 'preferences' not in data:
+            return jsonify({'error': 'Preferences are required'}), 400
+
+        logger.debug("Generating assessment with user preferences")
+        assessment = goodfire_service.generate_assessment(latest_document, data['preferences'])
+        
+        return jsonify({
+            'assessment': json.loads(assessment),
+            'status': 'completed'
+        })
+
+    except Exception as e:
+        logger.error(f"Error generating assessment: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/qa', methods=['POST'])
 def answer_question():
     """Handle Q&A queries using Goodfire API."""

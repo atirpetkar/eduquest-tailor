@@ -16,10 +16,9 @@ interface AssessmentProps {
 }
 
 interface Question {
-  id: number;
-  text: string;
-  options?: string[];
-  type: "multiple-choice" | "open-ended";
+  question: string;
+  options: string[];
+  correctAnswer: string;
 }
 
 export const AssessmentInterface = ({ documentText, preferences }: AssessmentProps) => {
@@ -32,43 +31,39 @@ export const AssessmentInterface = ({ documentText, preferences }: AssessmentPro
   const [score, setScore] = useState<number | null>(null);
 
   useEffect(() => {
-    const generateQuestions = async () => {
+    const generateAssessment = async () => {
       try {
-        const storedDocumentText = sessionStorage.getItem('documentText');
         const storedPreferences = sessionStorage.getItem('preferences');
 
-        if (!storedDocumentText || !storedPreferences) {
-          setError("No document or preferences found");
-          toast.error("No document or preferences found");
+        if (!storedPreferences) {
+          setError("No preferences found");
+          toast.error("No preferences found");
           navigate('/');
           return;
         }
 
-        // Generate questions using Goodfire service
-        const response = await fetch(`${API_BASE_URL}/qa`, {
+        console.log("Generating assessment with preferences:", storedPreferences);
+        const response = await fetch(`${API_BASE_URL}/generate-assessment`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            question: "Generate 3 multiple choice questions based on the document content",
-            context: storedDocumentText
+            preferences: JSON.parse(storedPreferences)
           }),
         });
 
         if (!response.ok) {
-          throw new Error('Failed to generate questions');
+          throw new Error('Failed to generate assessment');
         }
 
         const result = await response.json();
-        const generatedQuestions = JSON.parse(result.answer).map((q: any, index: number) => ({
-          id: index + 1,
-          text: q.question,
-          options: q.options,
-          type: "multiple-choice"
-        }));
+        if (result.error) {
+          throw new Error(result.error);
+        }
 
-        setQuestions(generatedQuestions);
+        console.log("Assessment generated:", result.assessment);
+        setQuestions(result.assessment);
         setLoading(false);
         toast.success("Assessment generated successfully!");
       } catch (error) {
@@ -79,15 +74,18 @@ export const AssessmentInterface = ({ documentText, preferences }: AssessmentPro
       }
     };
 
-    generateQuestions();
+    generateAssessment();
   }, [navigate]);
 
   const handleSubmit = () => {
-    // Calculate a simple score (for demonstration)
+    // Calculate score based on correct answers
     const totalQuestions = questions.length;
-    const correctAnswers = Object.values(answers).length; // In a real app, you'd compare with actual correct answers
-    const calculatedScore = (correctAnswers / totalQuestions) * 100;
+    const correctAnswers = Object.entries(answers).reduce((count, [index, answer]) => {
+      const questionIndex = parseInt(index) - 1;
+      return count + (answer === questions[questionIndex].correctAnswer ? 1 : 0);
+    }, 0);
     
+    const calculatedScore = (correctAnswers / totalQuestions) * 100;
     setScore(calculatedScore);
     setShowResults(true);
     toast.success("Assessment submitted successfully!");
@@ -155,28 +153,26 @@ export const AssessmentInterface = ({ documentText, preferences }: AssessmentPro
       <Card className="p-6 bg-white shadow-lg rounded-lg">
         <h2 className="text-2xl font-semibold mb-6 text-gray-800">Assessment</h2>
         <div className="space-y-6">
-          {questions.map((question) => (
-            <Card key={question.id} className="p-4 bg-gray-50">
-              <p className="font-medium mb-4 text-gray-700">{question.text}</p>
+          {questions.map((question, index) => (
+            <Card key={index} className="p-4 bg-gray-50">
+              <p className="font-medium mb-4 text-gray-700">{question.question}</p>
               
-              {question.type === "multiple-choice" && question.options && (
-                <RadioGroup
-                  onValueChange={(value) => setAnswers(prev => ({ ...prev, [question.id]: value }))}
-                  value={answers[question.id]}
-                >
-                  {question.options.map((option, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <RadioGroupItem value={option} id={`q${question.id}-${index}`} />
-                      <Label 
-                        htmlFor={`q${question.id}-${index}`}
-                        className="text-gray-700"
-                      >
-                        {option}
-                      </Label>
-                    </div>
-                  ))}
-                </RadioGroup>
-              )}
+              <RadioGroup
+                onValueChange={(value) => setAnswers(prev => ({ ...prev, [index + 1]: value }))}
+                value={answers[index + 1]}
+              >
+                {question.options.map((option, optionIndex) => (
+                  <div key={optionIndex} className="flex items-center space-x-2">
+                    <RadioGroupItem value={option} id={`q${index}-${optionIndex}`} />
+                    <Label 
+                      htmlFor={`q${index}-${optionIndex}`}
+                      className="text-gray-700"
+                    >
+                      {option}
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
             </Card>
           ))}
           
