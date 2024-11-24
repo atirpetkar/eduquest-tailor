@@ -1,69 +1,135 @@
-# Welcome to your Lovable project
+# 🎓 EduQuest - AI-Powered Learning Platform
 
-## Project info
+[![React](https://img.shields.io/badge/React-18.3.1-61DAFB?logo=react)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Latest-3178C6?logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-Latest-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
+[![Vite](https://img.shields.io/badge/Vite-Latest-646CFF?logo=vite)](https://vitejs.dev/)
 
-**URL**: https://lovable.dev/projects/be708615-c410-4213-a9de-8fc4d65d352a
+## 🚀 Overview
 
-## How can I edit this code?
+EduQuest is a cutting-edge educational platform that leverages AI technology to transform the learning experience. It provides personalized learning paths, adaptive content generation, and intelligent assessments for both students and educators.
 
-There are several ways of editing your application.
+![EduQuest Platform](public/og-image.svg)
 
-**Use Lovable**
+## ✨ Key Features
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/be708615-c410-4213-a9de-8fc4d65d352a) and start prompting.
+- 🤖 **AI-Powered Learning** - Utilizes advanced AI models for content generation and adaptation
+- 📚 **Smart Content Management** - Easy document upload and processing for educators
+- 💡 **Intelligent Q&A System** - Interactive chat interface for student queries
+- 📊 **Adaptive Assessments** - Personalized evaluation based on learning progress
+- 🎨 **Modern UI/UX** - Sleek, responsive design with dynamic color schemes
+- 🔄 **Real-time Synchronization** - Seamless integration between admin and student portals
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🛠️ Tech Stack
 
-**Use your preferred IDE**
+- **Frontend:**
+  - React 18 with TypeScript
+  - Tailwind CSS for styling
+  - shadcn/ui components
+  - Tanstack Query for data management
+  - Lucide React for icons
+  - React Router for navigation
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- **Backend:**
+  - Flask
+  - OpenAI Integration
+  - FAISS for vector similarity search
+  - RESTful API architecture
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 🚀 Getting Started
 
-Follow these steps:
+### Prerequisites
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+- Node.js & npm - [Install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- Python 3.8+ - [Download Python](https://www.python.org/downloads/)
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Frontend Setup
 
-# Step 3: Install the necessary dependencies.
-npm i
+```bash
+# Clone the repository
+git clone <your-repo-url>
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Navigate to project directory
+cd eduquest
+
+# Install dependencies
+npm install
+
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Backend Setup
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+# Navigate to backend directory
+cd backend
 
-**Use GitHub Codespaces**
+# Create virtual environment
+python -m venv venv
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# Activate virtual environment
+# On Windows:
+venv\Scripts\activate
+# On Unix/MacOS:
+source venv/bin/activate
 
-## What technologies are used for this project?
+# Install dependencies
+pip install -r requirements.txt
 
-This project is built with .
+# Set environment variables
+export OPENAI_API_KEY="your-openai-key"
+export GOODFIRE_API_KEY="your-goodfire-key"
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+# Start Flask server
+python app.py
+```
 
-## How can I deploy this project?
+## 🌐 Environment Variables
 
-Simply open [Lovable](https://lovable.dev/projects/be708615-c410-4213-a9de-8fc4d65d352a) and click on Share -> Publish.
+Create a `.env` file in the backend directory:
 
-## I want to use a custom domain - is that possible?
+```env
+OPENAI_API_KEY=your_openai_api_key
+GOODFIRE_API_KEY=your_goodfire_api_key
+```
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+## 🎯 Usage
+
+1. **Admin Portal:**
+   - Upload educational content
+   - Process and manage learning materials
+   - Monitor student progress
+
+2. **Student Portal:**
+   - Access personalized learning content
+   - Interact with AI-powered Q&A system
+   - Take adaptive assessments
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [OpenAI](https://openai.com/) for AI capabilities
+- [Goodfire](https://goodfire.dev/) for API integration
+- [shadcn/ui](https://ui.shadcn.com/) for UI components
+
+## 📧 Contact
+
+Project Link: [https://github.com/yourusername/eduquest](https://github.com/yourusername/eduquest)
+
+---
+
+Made with ❤️ using [Lovable](https://lovable.dev)
