@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Onboarding } from "@/components/Onboarding";
 import { DocumentUpload } from "@/components/DocumentUpload";
 import { QAInterface } from "@/components/QAInterface";
+import { AssessmentInterface } from "@/components/AssessmentInterface";
 
 const Index = () => {
-  const [step, setStep] = useState<"onboarding" | "upload" | "qa">("onboarding");
+  const [step, setStep] = useState<"onboarding" | "upload" | "qa" | "assessment">("onboarding");
   const [preferences, setPreferences] = useState(null);
   const [documentText, setDocumentText] = useState<string | null>(null);
 
@@ -27,8 +28,11 @@ const Index = () => {
         {step === "upload" && (
           <DocumentUpload onUpload={handleDocumentUpload} />
         )}
-        {step === "qa" && (
-          <QAInterface />
+        {step === "qa" && documentText && preferences && (
+          <QAInterface documentText={documentText} preferences={preferences} />
+        )}
+        {step === "assessment" && documentText && preferences && (
+          <AssessmentInterface documentText={documentText} preferences={preferences} />
         )}
       </div>
     </div>
