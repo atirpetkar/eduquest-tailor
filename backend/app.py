@@ -63,7 +63,7 @@ def get_latest_document():
 def upload_document():
     """Handle document upload, chunking, and embedding."""
     try:
-        global latest_document, latest_notes
+        global latest_document
         logger.info("Received document upload request")
         
         if 'file' not in request.files:
@@ -71,14 +71,7 @@ def upload_document():
             return jsonify({'error': 'No file provided'}), 400
 
         file = request.files['file']
-        preferences = request.form.get('preferences')
         
-        if not preferences:
-            logger.error("No preferences provided")
-            return jsonify({'error': 'User preferences are required'}), 400
-            
-        logger.debug(f"Received preferences: {preferences}")
-
         if file.filename == '':
             logger.error("No file selected")
             return jsonify({'error': 'No file selected'}), 400
@@ -94,10 +87,6 @@ def upload_document():
         logger.debug("Chunking document")
         chunks = chunk_text(content)
         
-        # Generate course notes based on preferences
-        logger.debug("Generating course notes with user preferences")
-        latest_notes = goodfire_service.generate_course_notes(content, json.loads(preferences))
-
         # Add chunks to embedding service
         logger.debug("Adding chunks to embedding service")
         embedding_service.add_chunks(chunks)
@@ -106,12 +95,36 @@ def upload_document():
         return jsonify({
             'message': 'Document processed successfully',
             'chunks_processed': len(chunks),
-            'notes': latest_notes,
             'status': 'completed'
         })
 
     except Exception as e:
         logger.error(f"Error processing document: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/generate-notes', methods=['POST'])
+def generate_notes():
+    """Generate course notes based on preferences."""
+    try:
+        global latest_document, latest_notes
+        
+        if not latest_document:
+            return jsonify({'error': 'No document available'}), 400
+            
+        data = request.json
+        if not data or 'preferences' not in data:
+            return jsonify({'error': 'Preferences are required'}), 400
+
+        logger.debug("Generating course notes with user preferences")
+        latest_notes = goodfire_service.generate_course_notes(latest_document, data['preferences'])
+        
+        return jsonify({
+            'notes': latest_notes,
+            'status': 'completed'
+        })
+
+    except Exception as e:
+        logger.error(f"Error generating notes: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/qa', methods=['POST'])

@@ -10,11 +10,10 @@ import { ArrowLeft, Flame } from "lucide-react";
 
 interface DocumentUploadProps {
   onUpload: (text: string) => void;
-  preferences?: any;
 }
 
-export const DocumentUpload = ({ onUpload, preferences }: DocumentUploadProps) => {
-  console.log("Rendering DocumentUpload component with preferences:", preferences);
+export const DocumentUpload = ({ onUpload }: DocumentUploadProps) => {
+  console.log("Rendering DocumentUpload component");
   
   const [file, setFile] = useState<File | null>(null);
   const [progress, setProgress] = useState(0);
@@ -24,11 +23,9 @@ export const DocumentUpload = ({ onUpload, preferences }: DocumentUploadProps) =
 
   const getStatusMessage = (progress: number) => {
     if (progress === 0) return "";
-    if (progress < 25) return "Processing your document...";
-    if (progress < 50) return "Chunking your document into smaller pieces...";
-    if (progress < 75) return "Creating embeddings for each chunk...";
-    if (progress < 90) return "Storing chunks in vector database...";
-    if (progress < 100) return "Generating course notes based on your preferences...";
+    if (progress < 33) return "Processing your document...";
+    if (progress < 66) return "Chunking your document into smaller pieces...";
+    if (progress < 100) return "Storing chunks in vector database...";
     return "Document processed successfully! 🎉";
   };
 
@@ -54,10 +51,9 @@ export const DocumentUpload = ({ onUpload, preferences }: DocumentUploadProps) =
     }
 
     try {
-      console.log("Starting file upload process with preferences:", preferences);
+      console.log("Starting file upload process");
       setIsProcessing(true);
       
-      // Start progress simulation with actual processing steps
       const progressInterval = setInterval(() => {
         setProgress(prev => {
           const newProgress = Math.min(prev + 5, 90);
@@ -71,9 +67,6 @@ export const DocumentUpload = ({ onUpload, preferences }: DocumentUploadProps) =
 
       const formData = new FormData();
       formData.append('file', file);
-      if (preferences) {
-        formData.append('preferences', JSON.stringify(preferences));
-      }
       
       console.log("Making API request to:", `${API_BASE_URL}/documents`);
       const response = await fetch(`${API_BASE_URL}/documents`, {
@@ -88,10 +81,9 @@ export const DocumentUpload = ({ onUpload, preferences }: DocumentUploadProps) =
       const result = await response.json();
       console.log("Upload successful, response:", result);
       
-      // Complete the progress
       setProgress(100);
       setStatus(getStatusMessage(100));
-      onUpload(result.notes);
+      onUpload("");  // We'll get notes later after preferences
       toast.success("Document processed successfully!");
     } catch (error) {
       console.error("Error processing file:", error);
