@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, GraduationCap, BookOpen, School } from "lucide-react";
+import { ArrowRight, BookOpen, School } from "lucide-react";
 import { toast } from "sonner";
 
 const Landing = () => {
@@ -16,9 +16,13 @@ const Landing = () => {
     <div className="min-h-screen bg-gradient-to-br from-[#F2FCE2] via-[#E5DEFF] to-[#FDE1D3] animate-gradient-x flex items-center justify-center p-4">
       <div className="container max-w-4xl mx-auto space-y-12">
         <div className="text-center space-y-6 animate-fade-in">
-          <GraduationCap className="w-20 h-20 mx-auto text-[#6E59A5] animate-bounce" />
+          <img 
+            src="/edufire-logo.png" 
+            alt="EduFire Logo" 
+            className="w-24 h-24 mx-auto hover:scale-110 transition-transform duration-300"
+          />
           <h1 className="text-6xl font-bold bg-gradient-to-r from-[#8B5CF6] via-[#D946EF] to-[#F97316] bg-clip-text text-transparent animate-text mb-4">
-            EduQuest Platform
+            EduFire Platform
           </h1>
           <p className="text-gray-600 text-xl max-w-2xl mx-auto">
             Transform your learning experience with our AI-powered educational platform
