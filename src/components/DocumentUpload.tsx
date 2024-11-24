@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "@/config";
 
 export const DocumentUpload = ({ onUpload }: { onUpload: (text: string) => void }) => {
   const [file, setFile] = useState<File | null>(null);
@@ -24,23 +25,6 @@ export const DocumentUpload = ({ onUpload }: { onUpload: (text: string) => void 
     }
   };
 
-  const simulateDocumentProcessing = async () => {
-    const steps = [
-      { progress: 20, status: "Parsing document..." },
-      { progress: 40, status: "Chunking content..." },
-      { progress: 60, status: "Generating embeddings..." },
-      { progress: 80, status: "Storing in vector database..." },
-      { progress: 90, status: "Generating course notes..." },
-      { progress: 100, status: "Processing complete!" }
-    ];
-
-    for (const step of steps) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setProgress(step.progress);
-      setStatus(step.status);
-    }
-  };
-
   const handleUpload = async () => {
     if (!file) {
       toast.error("Please select a file first");
@@ -49,12 +33,20 @@ export const DocumentUpload = ({ onUpload }: { onUpload: (text: string) => void 
 
     try {
       setIsProcessing(true);
-      const text = await file.text();
+      const formData = new FormData();
+      formData.append('file', file);
       
-      // Start processing simulation
-      await simulateDocumentProcessing();
-      
-      onUpload(text);
+      const response = await fetch(`${API_BASE_URL}/documents`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const result = await response.json();
+      onUpload(result.notes);
       toast.success("Document processed successfully!");
     } catch (error) {
       console.error("Error processing file:", error);
