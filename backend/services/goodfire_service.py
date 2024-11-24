@@ -15,7 +15,8 @@ class GoodfireService:
             logger.info("Generating course notes with Goodfire API")
             logger.debug(f"Preferences: {preferences}")
 
-            prompt = f"Generate course notes for the following content according to these preferences: {preferences}\n\nContent: {content}"
+            # Specific prompt for course notes only
+            prompt = f"Generate detailed course notes for the following content according to these preferences: {preferences}. Focus only on creating clear, organized notes without including any assessment questions.\n\nContent: {content}"
             
             response = ""
             for token in self.client.chat.completions.create(

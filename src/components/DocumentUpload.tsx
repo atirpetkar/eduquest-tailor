@@ -83,7 +83,7 @@ export const DocumentUpload = ({ onUpload }: DocumentUploadProps) => {
       
       setProgress(100);
       setStatus(getStatusMessage(100));
-      onUpload("");  // We'll get notes later after preferences
+      onUpload("");
       toast.success("Document processed successfully!");
     } catch (error) {
       console.error("Error processing file:", error);
@@ -95,7 +95,7 @@ export const DocumentUpload = ({ onUpload }: DocumentUploadProps) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="container max-w-4xl mx-auto py-8">
       <div className="flex items-center gap-4 mb-8">
         <Button 
           variant="ghost"
