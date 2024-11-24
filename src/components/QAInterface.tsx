@@ -39,6 +39,13 @@ export const QAInterface = ({ documentText, preferences }: { documentText: strin
     fetchLatestDocument();
   }, []);
 
+  const handleStartAssessment = () => {
+    // Store document and preferences in sessionStorage
+    sessionStorage.setItem('documentText', documentText);
+    sessionStorage.setItem('preferences', JSON.stringify(preferences));
+    navigate('/assessment');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
@@ -132,7 +139,7 @@ export const QAInterface = ({ documentText, preferences }: { documentText: strin
       </Card>
 
       <Button 
-        onClick={() => navigate('/assessment')}
+        onClick={handleStartAssessment}
         className="w-full bg-gradient-to-r from-primary to-secondary text-white hover:opacity-90 transition-opacity"
       >
         Start Assessment
