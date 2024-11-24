@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Onboarding } from "@/components/Onboarding";
 import { DocumentUpload } from "@/components/DocumentUpload";
 import { QAInterface } from "@/components/QAInterface";
@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, BookOpen } from "lucide-react";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/config";
 
 interface IndexProps {
   isStudent?: boolean;
@@ -22,10 +23,35 @@ const Index = ({ isStudent = false }: IndexProps) => {
   const [documentText, setDocumentText] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  // Check for existing document on component mount
+  useEffect(() => {
+    const checkExistingDocument = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/documents/latest`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.content) {
+            console.log("Found existing document");
+            setDocumentText(data.content);
+            if (isStudent && step === "onboarding") {
+              toast.info("Document is ready for learning!");
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error checking for existing document:", error);
+      }
+    };
+
+    checkExistingDocument();
+  }, [isStudent, step]);
+
   const handlePreferencesComplete = async (prefs: any) => {
     console.log("Preferences submitted:", prefs);
     setPreferences(prefs);
     toast.success("Preferences saved successfully!");
+    
+    // Only proceed to QA if we have a document
     if (documentText) {
       console.log("Document already uploaded, moving to QA step");
       setStep("qa");
