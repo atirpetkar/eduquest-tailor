@@ -48,6 +48,19 @@ def chunk_text(text: str, chunk_size: int = 1000) -> List[str]:
     
     return chunks
 
+def generate_course_notes(content: str, preferences: dict) -> str:
+    """Generate course notes based on user preferences."""
+    prompt = f"Generate course notes for the following content according to these preferences: {preferences}\n\nContent: {content}"
+    
+    response = openai.ChatCompletion.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant that generates course notes."},
+            {"role": "user", "content": prompt}
+        ]
+    )
+    return response.choices[0].message.content
+
 @app.route('/api/documents', methods=['POST'])
 def upload_document():
     """Handle document upload, chunking, and embedding."""
@@ -55,6 +68,8 @@ def upload_document():
         return jsonify({'error': 'No file provided'}), 400
     
     file = request.files['file']
+    preferences = request.form.get('preferences', '{}')
+    
     if file.filename == '':
         return jsonify({'error': 'No file selected'}), 400
 
@@ -71,6 +86,9 @@ def upload_document():
             {"progress": 100, "status": "Processing complete!"}
         ]
         
+        # Generate course notes based on preferences
+        notes = generate_course_notes(content, json.loads(preferences))
+        
         # Chunk the document
         chunks = chunk_text(content)
         stored_chunks.extend(chunks)
@@ -82,7 +100,8 @@ def upload_document():
         
         return jsonify({
             'message': 'Document processed successfully',
-            'chunks_processed': len(chunks)
+            'chunks_processed': len(chunks),
+            'notes': notes
         })
         
     except Exception as e:
@@ -107,12 +126,17 @@ def answer_question():
         relevant_chunks = [stored_chunks[i] for i in I[0] if i < len(stored_chunks)]
         context = "\n".join(relevant_chunks)
         
-        # Generate response using Goodfire API (placeholder)
-        # This should be replaced with actual Goodfire API integration
-        response = "This is a simulated response based on the context."
+        # Generate response using GPT-4
+        response = openai.ChatCompletion.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant answering questions based on the provided context."},
+                {"role": "user", "content": f"Context: {context}\n\nQuestion: {data['question']}"}
+            ]
+        )
         
         return jsonify({
-            'answer': response,
+            'answer': response.choices[0].message.content,
             'context': relevant_chunks
         })
         
