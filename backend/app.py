@@ -4,10 +4,10 @@ import logging
 from werkzeug.utils import secure_filename
 import json
 import openai
-from .config import OPENAI_API_KEY
-from .services.embedding_service import EmbeddingService
-from .services.goodfire_service import GoodfireService
-from .utils.text_utils import chunk_text
+from config import OPENAI_API_KEY
+from services.embedding_service import EmbeddingService
+from services.goodfire_service import GoodfireService
+from utils.text_utils import chunk_text
 
 # Configure OpenAI
 openai.api_key = OPENAI_API_KEY
