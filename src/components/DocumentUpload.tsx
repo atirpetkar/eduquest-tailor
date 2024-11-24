@@ -81,6 +81,7 @@ export const DocumentUpload = ({ onUpload }: DocumentUploadProps) => {
       const result = await response.json();
       console.log("Upload successful, response:", result);
       
+      clearInterval(progressInterval);
       setProgress(100);
       setStatus(getStatusMessage(100));
       onUpload("");
