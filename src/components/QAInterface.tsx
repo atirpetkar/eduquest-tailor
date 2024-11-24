@@ -76,25 +76,18 @@ export const QAInterface = ({ documentText, preferences }: { documentText: strin
     setInput("");
   };
 
-  const handleAssessmentClick = () => {
-    console.log("Navigating to assessment page");
-    sessionStorage.setItem('documentText', documentText);
-    sessionStorage.setItem('preferences', JSON.stringify(preferences));
-    navigate('/assessment');
-  };
-
   return (
     <div className="container max-w-4xl mx-auto py-8 space-y-8">
       <Button 
         variant="ghost" 
         onClick={() => navigate('/')}
-        className="mb-4 text-gray-700 hover:text-gray-900"
+        className="group text-primary hover:text-primary/90 hover:bg-primary/10"
       >
-        <ArrowLeft className="h-4 w-4 mr-2" />
+        <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
         Back to Home
       </Button>
 
-      <Card className="p-6 bg-white shadow-lg rounded-lg">
+      <Card className="p-6 bg-white/95 backdrop-blur shadow-lg border-primary/20">
         <h2 className="text-2xl font-semibold mb-4 text-gray-800">Course Notes</h2>
         <ScrollArea className="h-[300px] w-full rounded-md border p-4 bg-gray-50">
           <pre className="whitespace-pre-wrap text-left text-gray-700">
@@ -103,7 +96,7 @@ export const QAInterface = ({ documentText, preferences }: { documentText: strin
         </ScrollArea>
       </Card>
 
-      <Card className="p-6 bg-white shadow-lg rounded-lg">
+      <Card className="p-6 bg-white/95 backdrop-blur shadow-lg border-primary/20">
         <h2 className="text-2xl font-semibold mb-4 text-gray-800">Ask Questions</h2>
         <div className="space-y-4">
           <ScrollArea className="h-[300px] mb-4 p-4 border rounded-md bg-gray-50">
@@ -126,23 +119,17 @@ export const QAInterface = ({ documentText, preferences }: { documentText: strin
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type your question..."
-              className="flex-grow text-gray-700"
+              className="flex-grow bg-white text-gray-900 border-primary/20 focus:border-primary/50 placeholder:text-gray-500"
             />
-            <Button type="submit" className="bg-primary text-white hover:bg-primary/90">
+            <Button 
+              type="submit" 
+              className="bg-gradient-to-r from-primary to-secondary text-white hover:opacity-90 transition-opacity"
+            >
               Send
             </Button>
           </form>
         </div>
       </Card>
-      
-      <div className="flex justify-end">
-        <Button 
-          onClick={handleAssessmentClick}
-          className="bg-secondary text-white hover:bg-secondary/90"
-        >
-          Continue to Assessment
-        </Button>
-      </div>
     </div>
   );
 };
