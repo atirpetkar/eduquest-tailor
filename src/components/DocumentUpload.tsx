@@ -8,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "@/config";
 
 export const DocumentUpload = ({ onUpload }: { onUpload: (text: string) => void }) => {
+  console.log("Rendering DocumentUpload component");
+  
   const [file, setFile] = useState<File | null>(null);
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState<string>("");
@@ -16,26 +18,32 @@ export const DocumentUpload = ({ onUpload }: { onUpload: (text: string) => void 
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
+    console.log("File selected:", selectedFile?.name);
+    
     if (selectedFile && selectedFile.type === "text/plain") {
       setFile(selectedFile);
       setProgress(0);
       setStatus("");
     } else {
+      console.warn("Invalid file type selected");
       toast.error("Please upload a .txt file");
     }
   };
 
   const handleUpload = async () => {
     if (!file) {
+      console.warn("Upload attempted without file selection");
       toast.error("Please select a file first");
       return;
     }
 
     try {
+      console.log("Starting file upload process");
       setIsProcessing(true);
       const formData = new FormData();
       formData.append('file', file);
       
+      console.log("Making API request to:", `${API_BASE_URL}/documents`);
       const response = await fetch(`${API_BASE_URL}/documents`, {
         method: 'POST',
         body: formData
@@ -46,6 +54,7 @@ export const DocumentUpload = ({ onUpload }: { onUpload: (text: string) => void 
       }
 
       const result = await response.json();
+      console.log("Upload successful, response:", result);
       onUpload(result.notes);
       toast.success("Document processed successfully!");
     } catch (error) {
@@ -62,7 +71,10 @@ export const DocumentUpload = ({ onUpload }: { onUpload: (text: string) => void 
         <h2 className="text-xl font-semibold">Upload Learning Material</h2>
         <Button 
           variant="outline"
-          onClick={() => navigate('/')}
+          onClick={() => {
+            console.log("Navigating back to home");
+            navigate('/');
+          }}
           className="ml-auto"
         >
           Back to Home

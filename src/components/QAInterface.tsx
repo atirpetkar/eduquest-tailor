@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "@/config";
 
 interface Message {
   role: "user" | "assistant";
@@ -13,6 +14,10 @@ interface Message {
 }
 
 export const QAInterface = ({ documentText, preferences }: { documentText: string; preferences: any }) => {
+  console.log("Rendering QAInterface component");
+  console.log("Document length:", documentText?.length);
+  console.log("Preferences:", preferences);
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [courseNotes, setCourseNotes] = useState<string>("");
@@ -28,23 +33,46 @@ ${preferences.contentFormat.map((pref: string) => `\n- Following ${pref} style`)
     toast.success("Course notes generated successfully!");
   }, [documentText, preferences]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
+    console.log("Submitting question:", input);
+    
+    // Add user message
     setMessages(prev => [...prev, { role: "user", content: input }]);
     
-    setTimeout(() => {
+    try {
+      console.log("Making API request to:", `${API_BASE_URL}/qa`);
+      const response = await fetch(`${API_BASE_URL}/qa`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ question: input }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get answer');
+      }
+
+      const result = await response.json();
+      console.log("Received answer:", result);
+      
       setMessages(prev => [...prev, { 
         role: "assistant", 
-        content: "This is a simulated response. In the real implementation, this would be replaced with the Goodfire API response." 
+        content: result.answer
       }]);
-    }, 1000);
+    } catch (error) {
+      console.error("Error getting answer:", error);
+      toast.error("Failed to get answer");
+    }
 
     setInput("");
   };
 
   const handleAssessmentClick = () => {
+    console.log("Navigating to assessment page");
     // Store the document and preferences in sessionStorage
     sessionStorage.setItem('documentText', documentText);
     sessionStorage.setItem('preferences', JSON.stringify(preferences));

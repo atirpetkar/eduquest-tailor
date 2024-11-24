@@ -13,6 +13,8 @@ interface IndexProps {
 }
 
 const Index = ({ isStudent = false }: IndexProps) => {
+  console.log(`Rendering Index component. isStudent: ${isStudent}`);
+  
   const [step, setStep] = useState<"onboarding" | "upload" | "qa" | "assessment">(
     isStudent ? "onboarding" : "upload"
   );
@@ -21,18 +23,20 @@ const Index = ({ isStudent = false }: IndexProps) => {
   const navigate = useNavigate();
 
   const handlePreferencesComplete = async (prefs: any) => {
-    console.log("Preferences saved:", prefs);
+    console.log("Preferences submitted:", prefs);
     setPreferences(prefs);
     toast.success("Preferences saved successfully!");
     if (documentText) {
+      console.log("Document already uploaded, moving to QA step");
       setStep("qa");
     } else {
+      console.log("Waiting for document upload");
       toast.info("Waiting for content to be uploaded by admin");
     }
   };
 
   const handleDocumentUpload = (text: string) => {
-    console.log("Document uploaded:", text);
+    console.log("Document uploaded, length:", text.length);
     setDocumentText(text);
     toast.success("Document processed successfully!");
     setStep("qa");
@@ -46,7 +50,10 @@ const Index = ({ isStudent = false }: IndexProps) => {
             <Button 
               variant="ghost"
               className="group hover:bg-white/20"
-              onClick={() => navigate('/')}
+              onClick={() => {
+                console.log("Navigating back to home");
+                navigate('/');
+              }}
             >
               <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
               Back
