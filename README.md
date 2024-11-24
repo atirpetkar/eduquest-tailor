@@ -131,5 +131,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 Project Link: [https://github.com/yourusername/eduquest](https://github.com/yourusername/eduquest)
 
 ---
-
-Made with ❤️ using [Lovable](https://lovable.dev)
