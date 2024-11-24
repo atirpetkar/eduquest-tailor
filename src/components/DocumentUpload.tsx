@@ -120,17 +120,31 @@ export const DocumentUpload = ({ onUpload, preferences }: DocumentUploadProps) =
               <div className="relative">
                 <Progress 
                   value={progress} 
-                  className="h-3 bg-primary/20"
+                  className="h-3 bg-orange-100"
+                  style={{
+                    background: 'linear-gradient(90deg, #FFA500 0%, #FF4500 100%)',
+                    boxShadow: '0 0 10px rgba(255, 165, 0, 0.5)'
+                  }}
                 />
                 <div 
                   className="absolute top-1/2 -translate-y-1/2 left-0 flex items-center"
                   style={{ left: `${progress}%` }}
                 >
-                  <Flame 
-                    className={`h-6 w-6 text-primary animate-pulse ${
-                      progress === 100 ? 'text-green-500' : ''
-                    }`}
-                  />
+                  <div className="relative">
+                    <Flame 
+                      className={`h-8 w-8 text-orange-500 filter drop-shadow-lg transform -translate-y-1 ${
+                        progress === 100 ? 'text-orange-600' : ''
+                      }`}
+                      style={{
+                        filter: 'drop-shadow(0 0 8px rgba(255, 165, 0, 0.8))'
+                      }}
+                    />
+                    <div className="absolute inset-0 animate-pulse opacity-75">
+                      <Flame 
+                        className="h-8 w-8 text-yellow-500"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
               <p className="text-sm text-muted-foreground animate-fade-in text-center">
