@@ -17,7 +17,7 @@ const Landing = () => {
       <div className="container max-w-4xl mx-auto space-y-12">
         <div className="text-center space-y-6 animate-fade-in">
           <img 
-            src="/edufire-logo.png" 
+            src="/edufire-logo.png"
             alt="EduFire Logo" 
             className="w-32 h-32 mx-auto hover:scale-110 transition-transform duration-300 logo"
           />
