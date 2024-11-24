@@ -19,13 +19,13 @@ const Landing = () => {
           <img 
             src="/edufire-logo.png" 
             alt="EduFire Logo" 
-            className="w-32 h-32 mx-auto hover:scale-110 transition-transform duration-300"
+            className="w-32 h-32 mx-auto hover:scale-110 transition-transform duration-300 logo"
           />
           <h1 className="text-6xl font-bold bg-gradient-to-r from-[#8B5CF6] via-[#D946EF] to-[#F97316] bg-clip-text text-transparent animate-text mb-4">
-            EduFire Platform
+            EduFire
           </h1>
           <p className="text-gray-300 text-xl max-w-2xl mx-auto">
-            Transform your learning experience with our AI-powered educational platform
+            Fueling Growth, One Student at a Time
           </p>
         </div>
         
