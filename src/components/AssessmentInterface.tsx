@@ -6,6 +6,13 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
+interface AssessmentProps {
+  documentText?: string;
+  preferences?: {
+    assessmentStyle: string[];
+  };
+}
+
 interface Question {
   id: number;
   text: string;
@@ -13,12 +20,12 @@ interface Question {
   type: "multiple-choice" | "open-ended";
 }
 
-export const AssessmentInterface = () => {
+export const AssessmentInterface = ({ documentText, preferences }: AssessmentProps) => {
   const navigate = useNavigate();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<Record<number, string>>({});
-  const [documentText, setDocumentText] = useState<string>("");
-  const [preferences, setPreferences] = useState<any>(null);
+  const [documentTextState, setDocumentText] = useState<string>(documentText || "");
+  const [preferencesState, setPreferences] = useState<any>(preferences || null);
 
   useEffect(() => {
     // Retrieve data from sessionStorage
@@ -61,7 +68,7 @@ export const AssessmentInterface = () => {
     // Here you would typically send the answers to a backend
   };
 
-  if (!preferences) {
+  if (!preferencesState) {
     return <div className="flex justify-center items-center h-screen">Loading...</div>;
   }
 
