@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface Message {
   role: "user" | "assistant";
@@ -15,11 +16,10 @@ export const QAInterface = ({ documentText, preferences }: { documentText: strin
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [courseNotes, setCourseNotes] = useState<string>("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log("Generating course notes with preferences:", preferences);
-    // Simulate generating course notes based on preferences
-    // In a real implementation, this would call the Goodfire API
     const simulatedNotes = `Sample course notes formatted according to preferences:
 ${preferences.contentFormat.map((pref: string) => `\n- Following ${pref} style`).join('')}
 \n\nDocument content summary:\n${documentText.slice(0, 200)}...`;
@@ -34,7 +34,6 @@ ${preferences.contentFormat.map((pref: string) => `\n- Following ${pref} style`)
 
     setMessages(prev => [...prev, { role: "user", content: input }]);
     
-    // Simulate AI response (replace with actual API call)
     setTimeout(() => {
       setMessages(prev => [...prev, { 
         role: "assistant", 
@@ -43,6 +42,13 @@ ${preferences.contentFormat.map((pref: string) => `\n- Following ${pref} style`)
     }, 1000);
 
     setInput("");
+  };
+
+  const handleAssessmentClick = () => {
+    // Store the document and preferences in sessionStorage
+    sessionStorage.setItem('documentText', documentText);
+    sessionStorage.setItem('preferences', JSON.stringify(preferences));
+    navigate('/assessment');
   };
 
   return (
@@ -97,7 +103,7 @@ ${preferences.contentFormat.map((pref: string) => `\n- Following ${pref} style`)
       </Tabs>
       
       <div className="flex justify-end">
-        <Button onClick={() => window.location.href = "/assessment"}>
+        <Button onClick={handleAssessmentClick}>
           Continue to Assessment
         </Button>
       </div>
