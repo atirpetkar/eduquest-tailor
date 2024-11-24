@@ -24,16 +24,42 @@ EduFire is a cutting-edge educational platform that leverages AI technology to t
 
 ### Prerequisites
 
-- Node.js & npm
-- Python 3.8+
+- Node.js (v16 or higher) - [Download here](https://nodejs.org/)
+- npm (comes with Node.js) or yarn
+- Python 3.8+ (for backend)
 
-### Quick Start
+### Frontend Setup
 
-1. Clone and install dependencies:
+1. Clone the repository:
 ```bash
 git clone https://github.com/yourusername/edufire
 cd edufire
+```
+
+2. Install dependencies:
+```bash
 npm install
+# or if you use yarn
+yarn install
+```
+
+3. Start the development server:
+```bash
+npm run dev
+# or if you use yarn
+yarn dev
+```
+
+4. Open your browser and visit:
+```
+http://localhost:5173
+```
+
+### Backend Setup
+
+1. Install Python dependencies:
+```bash
+pip install -r requirements.txt
 ```
 
 2. Set up environment variables:
@@ -42,10 +68,16 @@ OPENAI_API_KEY=your_openai_api_key
 GOODFIRE_API_KEY=your_goodfire_api_key
 ```
 
-3. Start the development server:
+3. Start the backend server:
 ```bash
-npm run dev
+python app.py
 ```
+
+### Common Issues
+
+- If you see a blank page, make sure both frontend and backend servers are running
+- For port conflicts, check if port 5173 is available
+- For module not found errors, try deleting node_modules and package-lock.json, then run npm install again
 
 ## 📝 License
 
