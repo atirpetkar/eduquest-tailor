@@ -3,7 +3,6 @@ from flask_cors import CORS
 import logging
 from werkzeug.utils import secure_filename
 import json
-import openai
 import goodfire
 from config import OPENAI_API_KEY, GOODFIRE_API_KEY
 from services.embedding_service import EmbeddingService
@@ -18,12 +17,11 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 CORS(app)
 
-# Configure OpenAI
-logger.info("Configuring OpenAI with API key")
+# Check OpenAI API key
+logger.info("Checking OpenAI API key")
 if not OPENAI_API_KEY:
     logger.error("OpenAI API key not found")
     raise ValueError("OpenAI API key is required")
-openai.api_key = OPENAI_API_KEY
 
 # Configure Goodfire
 logger.info("Configuring Goodfire with API key")

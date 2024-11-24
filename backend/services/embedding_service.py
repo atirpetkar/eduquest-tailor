@@ -1,4 +1,4 @@
-import openai
+from openai import OpenAI
 import logging
 from typing import List
 import numpy as np
@@ -11,17 +11,18 @@ class EmbeddingService:
         self.dimension = 1536  # OpenAI embedding dimension
         self.index = faiss.IndexFlatL2(self.dimension)
         self.stored_chunks = []
+        self.client = OpenAI()  # This will automatically use OPENAI_API_KEY from environment
 
     def generate_embedding(self, text: str) -> List[float]:
         """Generate embedding using OpenAI API."""
         try:
             logger.info(f"Generating embedding for text of length: {len(text)}")
-            response = openai.Embedding.create(
+            response = self.client.embeddings.create(
                 input=text,
                 model="text-embedding-ada-002"
             )
             logger.debug("Embedding generated successfully")
-            return response['data'][0]['embedding']
+            return response.data[0].embedding
         except Exception as e:
             logger.error(f"Error generating embedding: {str(e)}")
             raise
