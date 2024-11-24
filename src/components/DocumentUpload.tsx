@@ -8,8 +8,13 @@ import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "@/config";
 import { ArrowLeft, Flame } from "lucide-react";
 
-export const DocumentUpload = ({ onUpload }: { onUpload: (text: string) => void }) => {
-  console.log("Rendering DocumentUpload component");
+interface DocumentUploadProps {
+  onUpload: (text: string) => void;
+  preferences?: any;
+}
+
+export const DocumentUpload = ({ onUpload, preferences }: DocumentUploadProps) => {
+  console.log("Rendering DocumentUpload component with preferences:", preferences);
   
   const [file, setFile] = useState<File | null>(null);
   const [progress, setProgress] = useState(0);
@@ -38,11 +43,16 @@ export const DocumentUpload = ({ onUpload }: { onUpload: (text: string) => void 
       return;
     }
 
+    if (!preferences) {
+      console.warn("Upload attempted without user preferences");
+      toast.error("Please complete onboarding first");
+      return;
+    }
+
     try {
-      console.log("Starting file upload process");
+      console.log("Starting file upload process with preferences:", preferences);
       setIsProcessing(true);
       
-      // Simulate progress for better UX
       const progressInterval = setInterval(() => {
         setProgress(prev => {
           if (prev >= 90) {
@@ -55,6 +65,7 @@ export const DocumentUpload = ({ onUpload }: { onUpload: (text: string) => void 
 
       const formData = new FormData();
       formData.append('file', file);
+      formData.append('preferences', JSON.stringify(preferences));
       
       console.log("Making API request to:", `${API_BASE_URL}/documents`);
       const response = await fetch(`${API_BASE_URL}/documents`, {
@@ -135,7 +146,7 @@ export const DocumentUpload = ({ onUpload }: { onUpload: (text: string) => void 
           <Button 
             onClick={handleUpload}
             className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity"
-            disabled={!file || isProcessing}
+            disabled={!file || isProcessing || !preferences}
           >
             {isProcessing ? "Processing..." : "Upload Document"}
           </Button>

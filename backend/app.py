@@ -71,7 +71,12 @@ def upload_document():
             return jsonify({'error': 'No file provided'}), 400
 
         file = request.files['file']
-        preferences = request.form.get('preferences', '{}')
+        preferences = request.form.get('preferences')
+        
+        if not preferences:
+            logger.error("No preferences provided")
+            return jsonify({'error': 'User preferences are required'}), 400
+            
         logger.debug(f"Received preferences: {preferences}")
 
         if file.filename == '':
@@ -82,11 +87,11 @@ def upload_document():
         
         # Read and process the document
         content = file.read().decode('utf-8')
-        latest_document = content  # Store the document
+        latest_document = content
         logger.info(f"File content length: {len(content)} characters")
 
         # Generate course notes based on preferences
-        logger.debug("Generating course notes")
+        logger.debug("Generating course notes with user preferences")
         latest_notes = goodfire_service.generate_course_notes(content, json.loads(preferences))
 
         # Chunk the document and add to embedding service
