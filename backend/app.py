@@ -101,4 +101,39 @@ def upload_document():
         logger.error(f"Error processing document: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
-# ... keep existing code (Q&A endpoint and main block)
+@app.route('/api/qa', methods=['POST'])
+def answer_question():
+    """Handle Q&A queries using Goodfire API."""
+    try:
+        logger.info("Received Q&A request")
+        
+        data = request.json
+        if not data or 'question' not in data:
+            logger.error("No question provided in request")
+            return jsonify({'error': 'No question provided'}), 400
+
+        logger.debug(f"Processing question: {data['question']}")
+        
+        # Generate embedding for the question
+        question_embedding = embedding_service.generate_embedding(data['question'])
+
+        # Get relevant chunks
+        relevant_chunks = embedding_service.search_similar_chunks(question_embedding)
+        context = "\n".join(relevant_chunks)
+
+        # Generate answer using Goodfire
+        answer = goodfire_service.answer_question(data['question'], context)
+
+        logger.info("Question answered successfully")
+        return jsonify({
+            'answer': answer,
+            'context': relevant_chunks
+        })
+
+    except Exception as e:
+        logger.error(f"Error processing question: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+if __name__ == '__main__':
+    logger.info("Starting Flask application on port 8084")
+    app.run(debug=True, port=8084)
