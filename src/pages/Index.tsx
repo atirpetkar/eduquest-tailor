@@ -5,7 +5,7 @@ import { QAInterface } from "@/components/QAInterface";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, BookOpen } from "lucide-react";
 import { toast } from "sonner";
 
 interface IndexProps {
@@ -21,19 +21,18 @@ const Index = ({ isStudent = false }: IndexProps) => {
   const navigate = useNavigate();
 
   const handlePreferencesComplete = async (prefs: any) => {
+    console.log("Preferences saved:", prefs);
     setPreferences(prefs);
     toast.success("Preferences saved successfully!");
-    // If there's already uploaded content, show QA interface
     if (documentText) {
       setStep("qa");
     } else {
-      // Otherwise, show a message that no content is available yet
       toast.info("Waiting for content to be uploaded by admin");
     }
   };
 
   const handleDocumentUpload = (text: string) => {
-    console.log("Document uploaded successfully");
+    console.log("Document uploaded:", text);
     setDocumentText(text);
     toast.success("Document processed successfully!");
     setStep("qa");
@@ -52,13 +51,16 @@ const Index = ({ isStudent = false }: IndexProps) => {
               <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
               Back
             </Button>
-            <h1 className="text-2xl font-bold text-[#1A1F2C]">
-              {isStudent ? "Student Portal" : "Admin Portal"}
-            </h1>
+            <div className="flex items-center gap-2">
+              <BookOpen className="h-6 w-6 text-[#6E59A5]" />
+              <h1 className="text-2xl font-bold text-[#1A1F2C]">
+                {isStudent ? "Student Portal" : "Admin Portal"}
+              </h1>
+            </div>
           </div>
         </div>
 
-        <Card className="p-6 bg-white/80 backdrop-blur">
+        <Card className="p-6 bg-white/80 backdrop-blur animate-fade-in">
           {!isStudent && step === "upload" && (
             <DocumentUpload onUpload={handleDocumentUpload} />
           )}
