@@ -69,7 +69,7 @@ const Index = ({ isStudent = false }: IndexProps) => {
       <div className="container max-w-4xl mx-auto">
         <Card className="p-6 bg-white/80 backdrop-blur animate-fade-in border border-white/20">
           {!isStudent && step === "upload" && (
-            <DocumentUpload onUpload={handleDocumentUpload} preferences={preferences} />
+            <DocumentUpload onUpload={handleDocumentUpload} />
           )}
           
           {isStudent && step === "onboarding" && (
