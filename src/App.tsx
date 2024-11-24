@@ -10,20 +10,22 @@ import { AssessmentInterface } from "@/components/AssessmentInterface";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/admin" element={<Index />} />
-          <Route path="/student" element={<Index isStudent={true} />} />
-          <Route path="/assessment" element={<AssessmentInterface />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <div className="dark">
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/admin" element={<Index />} />
+            <Route path="/student" element={<Index isStudent={true} />} />
+            <Route path="/assessment" element={<AssessmentInterface />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </div>
 );
 
 export default App;
