@@ -1,15 +1,13 @@
-import goodfire
 import logging
 from typing import List
-from ..config import GOODFIRE_API_KEY
 
 logger = logging.getLogger(__name__)
 
 class GoodfireService:
-    def __init__(self):
+    def __init__(self, client, model_variant):
         logger.info("Initializing Goodfire service")
-        self.client = goodfire.Client(api_key=GOODFIRE_API_KEY)
-        self.model_variant = goodfire.Variant("meta-llama/Meta-Llama-3-8B-Instruct")
+        self.client = client
+        self.model_variant = model_variant
 
     def generate_course_notes(self, content: str, preferences: dict) -> str:
         """Generate course notes using Goodfire API."""

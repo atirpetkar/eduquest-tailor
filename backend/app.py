@@ -4,24 +4,47 @@ import logging
 from werkzeug.utils import secure_filename
 import json
 import openai
-from config import OPENAI_API_KEY
+import goodfire
+from config import OPENAI_API_KEY, GOODFIRE_API_KEY
 from services.embedding_service import EmbeddingService
 from services.goodfire_service import GoodfireService
 from utils.text_utils import chunk_text
-
-# Configure OpenAI
-openai.api_key = OPENAI_API_KEY
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+# Initialize Flask app
 app = Flask(__name__)
 CORS(app)
 
+# Configure OpenAI
+logger.info("Configuring OpenAI with API key")
+if not OPENAI_API_KEY:
+    logger.error("OpenAI API key not found")
+    raise ValueError("OpenAI API key is required")
+openai.api_key = OPENAI_API_KEY
+
+# Configure Goodfire
+logger.info("Configuring Goodfire with API key")
+if not GOODFIRE_API_KEY:
+    logger.error("Goodfire API key not found")
+    raise ValueError("Goodfire API key is required")
+
+try:
+    # Initialize Goodfire client
+    logger.info("Initializing Goodfire client")
+    goodfire_client = goodfire.Client(api_key=GOODFIRE_API_KEY)
+    goodfire_variant = goodfire.Variant("meta-llama/Meta-Llama-3-8B-Instruct")
+    logger.info("Goodfire client initialized successfully")
+except Exception as e:
+    logger.error(f"Error initializing Goodfire client: {str(e)}")
+    raise
+
 # Initialize services
+logger.info("Initializing services")
 embedding_service = EmbeddingService()
-goodfire_service = GoodfireService()
+goodfire_service = GoodfireService(goodfire_client, goodfire_variant)
 
 @app.route('/api/documents', methods=['POST'])
 def upload_document():
