@@ -16,29 +16,41 @@ class GoodfireService:
             "Step-by-step guides"
         ]
 
-    def set_preferences_features(self, preferences: dict):
-        """Set model variant features based on user preferences."""
+    def set_content_format_features(self, preferences: dict):
+        """Set model variant features for content format."""
         try:
-            logger.info("Setting model variant features based on preferences")
+            logger.info("Setting content format features")
             
-            # Handle content format preference
             if 'contentFormat' in preferences:
                 content_format = preferences['contentFormat'][0]
                 logger.debug(f"Setting features for content format: {content_format}")
                 
-                # Get relevant features for the content format
+                # Search for relevant features
                 features, _ = self.client.features.search(
                     content_format,
                     model=self.model_variant,
                     top_k=3
                 )
                 
-                # Set the weight for the most relevant feature
+                # Set weight for most relevant feature
                 selected_feature = features[0]
                 logger.debug(f"Setting weight for feature: {selected_feature}")
                 self.model_variant.set(selected_feature, 0.65)
+                logger.info("Content format features set successfully")
 
-            # Handle assessment style preference
+        except Exception as e:
+            logger.error(f"Error setting content format features: {str(e)}")
+            raise
+
+    def set_assessment_features(self, preferences: dict):
+        """Set model variant features for assessment style."""
+        try:
+            logger.info("Setting assessment style features")
+            
+            # Reset previous features
+            logger.debug("Resetting model variant features")
+            self.model_variant.reset()
+            
             if 'assessmentStyle' in preferences:
                 assessment_style = preferences['assessmentStyle'][0]
                 logger.debug(f"Setting features for assessment style: {assessment_style}")
@@ -52,12 +64,10 @@ class GoodfireService:
                 selected_feature = features[0]
                 logger.debug(f"Setting weight for feature: {selected_feature}")
                 self.model_variant.set(selected_feature, 0.6)
-
-            logger.info("Model variant features updated successfully")
-            logger.debug(f"Updated variant: {self.model_variant}")
+                logger.info("Assessment features set successfully")
 
         except Exception as e:
-            logger.error(f"Error setting model variant features: {str(e)}")
+            logger.error(f"Error setting assessment features: {str(e)}")
             raise
 
     def generate_course_notes(self, content: str, preferences: dict) -> str:
@@ -65,10 +75,9 @@ class GoodfireService:
         try:
             logger.info("Generating course notes with Goodfire API")
             
-            # Set features based on preferences before generating notes
-            self.set_preferences_features(preferences)
+            # Set content format features before generating notes
+            self.set_content_format_features(preferences)
             
-            # Simple prompt as features are already set in the model
             prompt = f"Generate detailed course notes for the following content:\n\nContent: {content}"
             
             response = ""
@@ -91,8 +100,8 @@ class GoodfireService:
         try:
             logger.info("Generating assessment with Goodfire API")
             
-            # Set features based on preferences
-            self.set_preferences_features(preferences)
+            # Set assessment features before generating assessment
+            self.set_assessment_features(preferences)
             
             assessment_type = preferences.get('assessmentStyle', ['multiple-choice'])[0]
             
@@ -123,7 +132,6 @@ class GoodfireService:
                 # For open-ended questions, add scoring function
                 if assessment_type != 'multiple-choice':
                     for question in parsed_response:
-                        # Add function to score open-ended answers
                         scoring_prompt = f"""
                         Compare this model answer: "{question['modelAnswer']}"
                         with this student answer: "{{student_answer}}"
@@ -135,12 +143,10 @@ class GoodfireService:
                 
             except json.JSONDecodeError:
                 logger.warning("Response wasn't valid JSON, attempting to fix format")
-                # Extract the array part from the response
                 start_idx = response.find('[')
                 end_idx = response.rfind(']') + 1
                 if start_idx != -1 and end_idx != -1:
                     json_str = response[start_idx:end_idx]
-                    # Validate the extracted JSON
                     parsed_json = json.loads(json_str)
                     return json.dumps(parsed_json)
                 raise ValueError("Could not extract valid JSON from response")
