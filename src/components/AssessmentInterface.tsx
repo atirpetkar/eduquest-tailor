@@ -3,25 +3,21 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "@/config";
 import { ArrowLeft, Home } from "lucide-react";
 
-interface AssessmentProps {
-  documentText?: string;
-  preferences?: {
-    assessmentStyle: string[];
-  };
-}
-
 interface Question {
   question: string;
-  options: string[];
-  correctAnswer: string;
+  options?: string[];
+  correctAnswer?: string;
+  modelAnswer?: string;
+  scoreAnswer?: string;
 }
 
-export const AssessmentInterface = ({ documentText, preferences }: AssessmentProps) => {
+export const AssessmentInterface = () => {
   const navigate = useNavigate();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<Record<number, string>>({});
@@ -29,6 +25,7 @@ export const AssessmentInterface = ({ documentText, preferences }: AssessmentPro
   const [error, setError] = useState<string | null>(null);
   const [showResults, setShowResults] = useState(false);
   const [score, setScore] = useState<number | null>(null);
+  const [assessmentType, setAssessmentType] = useState<'multiple-choice' | 'open-ended'>('multiple-choice');
 
   useEffect(() => {
     const generateAssessment = async () => {
@@ -42,14 +39,17 @@ export const AssessmentInterface = ({ documentText, preferences }: AssessmentPro
           return;
         }
 
-        console.log("Generating assessment with preferences:", storedPreferences);
+        const preferences = JSON.parse(storedPreferences);
+        setAssessmentType(preferences.assessmentStyle?.[0] === 'multiple-choice' ? 'multiple-choice' : 'open-ended');
+
+        console.log("Generating assessment with preferences:", preferences);
         const response = await fetch(`${API_BASE_URL}/generate-assessment`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            preferences: JSON.parse(storedPreferences)
+            preferences: preferences
           }),
         });
 
@@ -77,16 +77,50 @@ export const AssessmentInterface = ({ documentText, preferences }: AssessmentPro
     generateAssessment();
   }, [navigate]);
 
-  const handleSubmit = () => {
-    // Calculate score based on correct answers
-    const totalQuestions = questions.length;
-    const correctAnswers = Object.entries(answers).reduce((count, [index, answer]) => {
-      const questionIndex = parseInt(index) - 1;
-      return count + (answer === questions[questionIndex].correctAnswer ? 1 : 0);
-    }, 0);
-    
-    const calculatedScore = (correctAnswers / totalQuestions) * 100;
-    setScore(calculatedScore);
+  const handleSubmit = async () => {
+    if (assessmentType === 'multiple-choice') {
+      // Calculate score for multiple choice questions
+      const totalQuestions = questions.length;
+      const correctAnswers = Object.entries(answers).reduce((count, [index, answer]) => {
+        const questionIndex = parseInt(index) - 1;
+        return count + (answer === questions[questionIndex].correctAnswer ? 1 : 0);
+      }, 0);
+      
+      const calculatedScore = (correctAnswers / totalQuestions) * 100;
+      setScore(calculatedScore);
+    } else {
+      // Score open-ended questions
+      try {
+        let totalScore = 0;
+        for (let i = 0; i < questions.length; i++) {
+          const response = await fetch(`${API_BASE_URL}/score-answer`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              modelAnswer: questions[i].modelAnswer,
+              studentAnswer: answers[i + 1] || ''
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to score answer');
+          }
+
+          const result = await response.json();
+          totalScore += result.score;
+        }
+
+        const averageScore = totalScore / questions.length;
+        setScore(averageScore);
+      } catch (error) {
+        console.error("Error scoring answers:", error);
+        toast.error("Error calculating score");
+        return;
+      }
+    }
+
     setShowResults(true);
     toast.success("Assessment submitted successfully!");
   };
@@ -123,9 +157,11 @@ export const AssessmentInterface = ({ documentText, preferences }: AssessmentPro
           <h2 className="text-2xl font-semibold mb-4">Assessment Results</h2>
           <p className="text-xl mb-6">Your Score: {score?.toFixed(0)}%</p>
           <div className="space-y-4">
-            <p className="text-gray-600">
-              Thank you for completing the assessment!
-            </p>
+            {assessmentType === 'open-ended' && (
+              <p className="text-gray-600">
+                Note: Open-ended questions are scored based on comparison with model answers.
+              </p>
+            )}
             <Button 
               onClick={() => navigate('/')}
               className="flex items-center gap-2 mx-auto"
@@ -157,22 +193,31 @@ export const AssessmentInterface = ({ documentText, preferences }: AssessmentPro
             <Card key={index} className="p-4 bg-gray-50">
               <p className="font-medium mb-4 text-gray-700">{question.question}</p>
               
-              <RadioGroup
-                onValueChange={(value) => setAnswers(prev => ({ ...prev, [index + 1]: value }))}
-                value={answers[index + 1]}
-              >
-                {question.options.map((option, optionIndex) => (
-                  <div key={optionIndex} className="flex items-center space-x-2">
-                    <RadioGroupItem value={option} id={`q${index}-${optionIndex}`} />
-                    <Label 
-                      htmlFor={`q${index}-${optionIndex}`}
-                      className="text-gray-700"
-                    >
-                      {option}
-                    </Label>
-                  </div>
-                ))}
-              </RadioGroup>
+              {assessmentType === 'multiple-choice' ? (
+                <RadioGroup
+                  onValueChange={(value) => setAnswers(prev => ({ ...prev, [index + 1]: value }))}
+                  value={answers[index + 1]}
+                >
+                  {question.options?.map((option, optionIndex) => (
+                    <div key={optionIndex} className="flex items-center space-x-2">
+                      <RadioGroupItem value={option} id={`q${index}-${optionIndex}`} />
+                      <Label 
+                        htmlFor={`q${index}-${optionIndex}`}
+                        className="text-gray-700"
+                      >
+                        {option}
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              ) : (
+                <Textarea
+                  placeholder="Type your answer here..."
+                  value={answers[index + 1] || ''}
+                  onChange={(e) => setAnswers(prev => ({ ...prev, [index + 1]: e.target.value }))}
+                  className="mt-2"
+                />
+              )}
             </Card>
           ))}
           

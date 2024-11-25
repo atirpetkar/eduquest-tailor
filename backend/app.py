@@ -185,6 +185,25 @@ def answer_question():
         logger.error(f"Error processing question: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/score-answer', methods=['POST'])
+def score_answer():
+    """Score an open-ended answer by comparing it to the model answer."""
+    try:
+        data = request.json
+        if not data or 'modelAnswer' not in data or 'studentAnswer' not in data:
+            return jsonify({'error': 'Missing required fields'}), 400
+
+        score = goodfire_service.score_open_ended_answer(
+            data['modelAnswer'],
+            data['studentAnswer']
+        )
+
+        return jsonify({'score': score})
+
+    except Exception as e:
+        logger.error(f"Error scoring answer: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     logger.info("Starting Flask application on port 8084")
     app.run(debug=True, port=8084)
