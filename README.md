@@ -1,100 +1,155 @@
-# 🔥 EduFire
+# 🔥 EduFire - AI-Powered Learning Platform
 
 [![React](https://img.shields.io/badge/React-18.3.1-61DAFB?logo=react)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Latest-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-Latest-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
 [![Vite](https://img.shields.io/badge/Vite-Latest-646CFF?logo=vite)](https://vitejs.dev/)
 
-## 🚀 Overview
+## 📚 Overview
 
-EduFire is a cutting-edge educational platform that leverages AI technology to transform the learning experience. It provides personalized learning paths, adaptive content generation, and intelligent assessments for both students and educators.
+EduFire is a cutting-edge educational platform that leverages AI technology to transform the learning experience. Our platform provides:
 
-![EduFire Platform](public/edufire-logo.png)
+- 🤖 AI-powered content generation and adaptation
+- 📝 Smart document processing and analysis
+- 💡 Intelligent Q&A system
+- 📊 Adaptive assessments
+- 🎨 Modern, responsive UI
 
-## ✨ Key Features
+## 🛠️ Technical Architecture
 
-- 🤖 **AI-Powered Learning** - Utilizes advanced AI models for content generation and adaptation
-- 📚 **Smart Content Management** - Easy document upload and processing for educators
-- 💡 **Intelligent Q&A System** - Interactive chat interface for student queries
-- 📊 **Adaptive Assessments** - Personalized evaluation based on learning progress
-- 🎨 **Modern UI/UX** - Sleek, responsive design with dynamic color schemes
-- 🔄 **Real-time Synchronization** - Seamless integration between admin and student portals
+### Frontend (React + TypeScript)
 
-## 🛠️ Getting Started
+#### Key Components
+- `DocumentUpload`: Handles document processing (📄)
+- `QAInterface`: Manages Q&A interactions (💭)
+- `AssessmentInterface`: Handles assessments and scoring (📝)
+- `Onboarding`: User preference management (👤)
+
+#### UI Framework
+- shadcn/ui components
+- Tailwind CSS for styling
+- Responsive design principles
+
+### Backend (Python + Flask)
+
+#### Core Services
+- `GoodfireService`: AI model management and interactions
+- `EmbeddingService`: Document embedding and similarity search
+- `AssessmentService`: Test generation and scoring
+
+#### API Endpoints
+- `/api/documents`: Document upload and processing
+- `/api/qa`: Q&A functionality
+- `/api/generate-notes`: Course notes generation
+- `/api/generate-assessment`: Assessment creation
+- `/api/score-answer`: Answer evaluation
+
+## 🚀 Getting Started
 
 ### Prerequisites
-
-- Node.js (v16 or higher) - [Download here](https://nodejs.org/)
-- npm (comes with Node.js) or yarn
-- Python 3.11+ (for backend)
+- Node.js (v16+)
+- Python 3.11+
+- OpenAI API key
+- Goodfire API key
 
 ### Frontend Setup
-
-1. Clone the repository:
 ```bash
-git clone https://github.com/atirpetkar/eduquest-tailor
-cd eduquest-tailor
-```
-
-2. Install dependencies:
-```bash
+# Install dependencies
 npm install
-# or if you use yarn
-yarn install
-```
 
-3. Start the development server:
-```bash
+# Start development server
 npm run dev
-# or if you use yarn
-yarn dev
-```
-
-4. Open your browser and visit:
-```
-http://localhost:8080
 ```
 
 ### Backend Setup
-
-1. Navigate to the backend directory:
 ```bash
+# Navigate to backend directory
 cd backend
-```
 
-2. Install Python dependencies:
-```bash
+# Install Python dependencies
 pip install -r requirements.txt
-```
 
-3. Set up environment variables:
-```env
-OPENAI_API_KEY=your_openai_api_key
-GOODFIRE_API_KEY=your_goodfire_api_key
-```
+# Set up environment variables
+export OPENAI_API_KEY=your_key_here
+export GOODFIRE_API_KEY=your_key_here
 
-4. Start the backend server:
-```bash
+# Start Flask server
 python app.py
 ```
 
-The backend server will start on port 8084.
+## 💻 Development Guidelines
 
-### Common Issues
+### Code Organization
+- Components are modular and focused
+- Extensive use of TypeScript for type safety
+- Consistent error handling and logging
+- Responsive design patterns
 
-- If you see a blank page, make sure both frontend and backend servers are running
-- For port conflicts, check if ports 5173 (frontend) and 8084 (backend) are available
-- For module not found errors, try deleting node_modules and package-lock.json, then run npm install again
+### Best Practices
+- 🔄 Regular error logging
+- 🎯 Component-focused architecture
+- 📱 Mobile-first design approach
+- 🧪 Error boundary implementation
+
+## 🔒 Security Considerations
+
+- API key management through environment variables
+- CORS configuration for API security
+- Input validation and sanitization
+- Rate limiting on API endpoints
+
+## 🎨 UI/UX Features
+
+- Responsive design for all screen sizes
+- Interactive loading states
+- Toast notifications for user feedback
+- Smooth animations and transitions
+- Dark mode support
+- Accessible components
+
+## 🔧 Configuration
+
+### Environment Variables
+```env
+OPENAI_API_KEY=your_openai_key
+GOODFIRE_API_KEY=your_goodfire_key
+```
+
+### API Configuration
+- Backend runs on port 8084
+- Frontend development server on port 5173
+- CORS enabled for development
+
+## 📈 Performance Optimization
+
+- Lazy loading of components
+- Efficient state management
+- Optimized API calls
+- Caching strategies
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
 ## 📝 License
 
-MIT License - feel free to use and modify!
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 🙏 Acknowledgments
-- [GoodFire AI](https://goodfire.ai/) for Interpretability and Steering capabilities
+
 - [OpenAI](https://openai.com/) for AI capabilities
+- [Goodfire AI](https://goodfire.ai/) for Interpretability
 - [shadcn/ui](https://ui.shadcn.com/) for UI components
 
-## 📧 Contact
+## 📧 Support
 
-Project Link: [https://github.com/atirpetkar/eduquest-tailor](https://github.com/atirpetkar/eduquest-tailor)
+For support, please open an issue in the repository or contact the maintainers.
+
+## 🔄 Version History
+
+- Current Version: 1.0.0
+- Initial Release: February 2024
