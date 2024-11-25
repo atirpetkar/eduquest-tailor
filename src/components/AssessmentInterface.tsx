@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "@/config";
-import { ArrowLeft, Home } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { QuestionCard } from "./assessment/QuestionCard";
+import { ResultsCard } from "./assessment/ResultsCard";
 
 interface Question {
   question: string;
@@ -79,11 +78,12 @@ export const AssessmentInterface = () => {
 
   const handleSubmit = async () => {
     if (assessmentType === 'multiple-choice') {
-      // Calculate score for multiple choice questions
+      // Score multiple choice by comparing answers with correct answers
       const totalQuestions = questions.length;
       const correctAnswers = Object.entries(answers).reduce((count, [index, answer]) => {
         const questionIndex = parseInt(index) - 1;
-        return count + (answer === questions[questionIndex].correctAnswer ? 1 : 0);
+        // Compare case-insensitive and trim whitespace
+        return count + (answer.trim().toLowerCase() === questions[questionIndex].correctAnswer?.toLowerCase().trim() ? 1 : 0);
       }, 0);
       
       const calculatedScore = (correctAnswers / totalQuestions) * 100;
@@ -151,28 +151,7 @@ export const AssessmentInterface = () => {
   }
 
   if (showResults) {
-    return (
-      <div className="container max-w-4xl mx-auto py-8">
-        <Card className="p-6 text-center">
-          <h2 className="text-2xl font-semibold mb-4">Assessment Results</h2>
-          <p className="text-xl mb-6">Your Score: {score?.toFixed(0)}%</p>
-          <div className="space-y-4">
-            {assessmentType === 'open-ended' && (
-              <p className="text-gray-600">
-                Note: Open-ended questions are scored based on comparison with model answers.
-              </p>
-            )}
-            <Button 
-              onClick={() => navigate('/')}
-              className="flex items-center gap-2 mx-auto"
-            >
-              <Home className="h-4 w-4" />
-              Return Home
-            </Button>
-          </div>
-        </Card>
-      </div>
-    );
+    return <ResultsCard score={score || 0} assessmentType={assessmentType} />;
   }
 
   return (
@@ -190,35 +169,13 @@ export const AssessmentInterface = () => {
         <h2 className="text-2xl font-semibold mb-6 text-gray-800">Assessment</h2>
         <div className="space-y-6">
           {questions.map((question, index) => (
-            <Card key={index} className="p-4 bg-gray-50">
-              <p className="font-medium mb-4 text-gray-700">{question.question}</p>
-              
-              {assessmentType === 'multiple-choice' ? (
-                <RadioGroup
-                  onValueChange={(value) => setAnswers(prev => ({ ...prev, [index + 1]: value }))}
-                  value={answers[index + 1]}
-                >
-                  {question.options?.map((option, optionIndex) => (
-                    <div key={optionIndex} className="flex items-center space-x-2">
-                      <RadioGroupItem value={option} id={`q${index}-${optionIndex}`} />
-                      <Label 
-                        htmlFor={`q${index}-${optionIndex}`}
-                        className="text-gray-700"
-                      >
-                        {option}
-                      </Label>
-                    </div>
-                  ))}
-                </RadioGroup>
-              ) : (
-                <Textarea
-                  placeholder="Type your answer here..."
-                  value={answers[index + 1] || ''}
-                  onChange={(e) => setAnswers(prev => ({ ...prev, [index + 1]: e.target.value }))}
-                  className="mt-2"
-                />
-              )}
-            </Card>
+            <QuestionCard
+              key={index}
+              question={question}
+              index={index}
+              answer={answers[index + 1] || ''}
+              onAnswerChange={(value) => setAnswers(prev => ({ ...prev, [index + 1]: value }))}
+            />
           ))}
           
           <Button 
