@@ -77,22 +77,39 @@ export const AssessmentInterface = () => {
   }, [navigate]);
 
   const handleSubmit = async () => {
-    if (assessmentType === 'multiple-choice') {
-      // Score multiple choice by comparing answers with correct answers
-      const totalQuestions = questions.length;
-      const correctAnswers = Object.entries(answers).reduce((count, [index, answer]) => {
-        const questionIndex = parseInt(index) - 1;
-        // Compare case-insensitive and trim whitespace
-        return count + (answer.trim().toLowerCase() === questions[questionIndex].correctAnswer?.toLowerCase().trim() ? 1 : 0);
-      }, 0);
-      
-      const calculatedScore = (correctAnswers / totalQuestions) * 100;
-      setScore(calculatedScore);
-    } else {
-      // Score open-ended questions
-      try {
+    try {
+      console.log("Starting assessment submission...");
+      console.log("Assessment type:", assessmentType);
+      console.log("Answers:", answers);
+
+      if (assessmentType === 'multiple-choice') {
+        // Score multiple choice by comparing answers with correct answers
+        const totalQuestions = questions.length;
+        let correctAnswers = 0;
+
+        for (let i = 0; i < totalQuestions; i++) {
+          const userAnswer = answers[i + 1]?.trim().toLowerCase();
+          const correctAnswer = questions[i].correctAnswer?.toLowerCase().trim();
+          console.log(`Question ${i + 1} - User answer: ${userAnswer}, Correct answer: ${correctAnswer}`);
+          
+          if (userAnswer === correctAnswer) {
+            correctAnswers++;
+          }
+        }
+        
+        const calculatedScore = (correctAnswers / totalQuestions) * 100;
+        console.log(`Multiple choice score: ${calculatedScore}% (${correctAnswers}/${totalQuestions} correct)`);
+        setScore(calculatedScore);
+        setShowResults(true);
+        toast.success("Assessment submitted successfully!");
+      } else {
+        // Score open-ended questions
+        console.log("Scoring open-ended questions...");
         let totalScore = 0;
-        for (let i = 0; i < questions.length; i++) {
+        const totalQuestions = questions.length;
+
+        for (let i = 0; i < totalQuestions; i++) {
+          console.log(`Scoring question ${i + 1}`);
           const response = await fetch(`${API_BASE_URL}/score-answer`, {
             method: 'POST',
             headers: {
@@ -109,20 +126,20 @@ export const AssessmentInterface = () => {
           }
 
           const result = await response.json();
+          console.log(`Question ${i + 1} score:`, result.score);
           totalScore += result.score;
         }
 
-        const averageScore = totalScore / questions.length;
+        const averageScore = totalScore / totalQuestions;
+        console.log(`Open-ended average score: ${averageScore}`);
         setScore(averageScore);
-      } catch (error) {
-        console.error("Error scoring answers:", error);
-        toast.error("Error calculating score");
-        return;
+        setShowResults(true);
+        toast.success("Assessment submitted successfully!");
       }
+    } catch (error) {
+      console.error("Error submitting assessment:", error);
+      toast.error("Error calculating score");
     }
-
-    setShowResults(true);
-    toast.success("Assessment submitted successfully!");
   };
 
   if (loading) {
