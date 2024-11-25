@@ -32,8 +32,8 @@ EduFire is a cutting-edge educational platform that leverages AI technology to t
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/edufire
-cd edufire
+git clone https://github.com/atirpetkar/eduquest-tailor
+cd eduquest-tailor
 ```
 
 2. Install dependencies:
@@ -52,7 +52,7 @@ yarn dev
 
 4. Open your browser and visit:
 ```
-http://localhost:5173
+http://localhost:8080
 ```
 
 ### Backend Setup
@@ -91,10 +91,10 @@ The backend server will start on port 8084.
 MIT License - feel free to use and modify!
 
 ## 🙏 Acknowledgments
-
+- [GoodFire AI](https://goodfire.ai/) for Interpretability and Steering capabilities
 - [OpenAI](https://openai.com/) for AI capabilities
 - [shadcn/ui](https://ui.shadcn.com/) for UI components
 
 ## 📧 Contact
 
-Project Link: [https://github.com/yourusername/edufire](https://github.com/yourusername/edufire)
+Project Link: [https://github.com/atirpetkar/eduquest-tailor](https://github.com/atirpetkar/eduquest-tailor)
